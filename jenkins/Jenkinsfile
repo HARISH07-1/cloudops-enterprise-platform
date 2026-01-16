@@ -1,7 +1,42 @@
-stage('Deploy Container') {
-    steps {
-        bat 'docker stop cloudops-container || echo container_not_running'
-        bat 'docker rm cloudops-container || echo container_not_present'
-        bat 'docker run -d -p 8081:80 --name cloudops-container cloudops-html-app'
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/HARISH07-1/cloudops-enterprise-platform.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Build stage completed'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                bat 'docker build -t cloudops-html-app -f docker/Dockerfile .'
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                bat 'docker stop cloudops-container || echo container_not_running'
+                bat 'docker rm cloudops-container || echo container_not_present'
+                bat 'docker run -d -p 8081:80 --name cloudops-container cloudops-html-app'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed!'
+        }
     }
 }
