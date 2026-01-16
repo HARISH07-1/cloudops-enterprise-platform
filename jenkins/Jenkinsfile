@@ -24,9 +24,16 @@ pipeline {
 
         stage('Deploy Container') {
             steps {
-                bat 'docker stop cloudops-container || echo container_not_running'
-                bat 'docker rm cloudops-container || echo container_not_present'
-                bat 'docker run -d -p 8081:80 --name cloudops-container cloudops-html-app'
+                script {
+                    // Stop container if running (ignore failure)
+                    bat(returnStatus: true, script: 'docker stop cloudops-container')
+
+                    // Remove container if exists (ignore failure)
+                    bat(returnStatus: true, script: 'docker rm cloudops-container')
+
+                    // Run new container (this MUST succeed)
+                    bat 'docker run -d -p 8081:80 --name cloudops-container cloudops-html-app'
+                }
             }
         }
     }
