@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/HARISH07-1/cloudops-enterprise-platform.git
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Build stage completed'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t cloudops-html-app -f docker/Dockerfile .'
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                sh '''
+                docker stop cloudops-container || true
+                docker rm cloudops-container || true
+                docker run -d -p 80:80 --name cloudops-container cloudops-html-app
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed!'
+        }
+    }
+}
