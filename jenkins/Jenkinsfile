@@ -17,15 +17,15 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t cloudops-html-app -f docker/Dockerfile .'
+                bat 'docker build -t cloudops-html-app -f docker/Dockerfile .'
             }
         }
 
         stage('Deploy Container') {
             steps {
-                sh '''
-                docker stop cloudops-container || true
-                docker rm cloudops-container || true
+                bat '''
+                docker stop cloudops-container || exit 0
+                docker rm cloudops-container || exit 0
                 docker run -d -p 80:80 --name cloudops-container cloudops-html-app
                 '''
             }
