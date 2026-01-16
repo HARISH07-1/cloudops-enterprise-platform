@@ -26,7 +26,8 @@ pipeline {
                 bat '''
                 docker stop cloudops-container || exit 0
                 docker rm cloudops-container || exit 0
-                docker run -d -p 80:80 --name cloudops-container cloudops-html-app
+                docker run -d -p 8081:80 --name cloudops-container cloudops-html-app
+
                 '''
             }
         }
